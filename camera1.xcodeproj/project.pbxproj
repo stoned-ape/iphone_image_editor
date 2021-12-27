@@ -7,9 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E1CBFBD2779D54B00EA1820 /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFBC2779D54A00EA1820 /* ARKit.framework */; };
+		2E1CBFC02779D57A00EA1820 /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFBF2779D57A00EA1820 /* RealityKit.framework */; };
+		2E1CBFC22779D58500EA1820 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFC12779D58500EA1820 /* MetalKit.framework */; };
+		2E1CBFC42779D58E00EA1820 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFC32779D58E00EA1820 /* Metal.framework */; };
 		2E7E3A68261301D700FE7FDE /* shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2E7E3A67261301D700FE7FDE /* shader.metal */; };
 		2E7E3A6B26132A4D00FE7FDE /* nature.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2E7E3A6A26132A4A00FE7FDE /* nature.jpg */; };
-		2E7E3A992614FB2B00FE7FDE /* objc.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E7E3A982614FB2A00FE7FDE /* objc.m */; };
 		2EC4FE192611F9D8003669FF /* camera1App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC4FE182611F9D8003669FF /* camera1App.swift */; };
 		2EC4FE1B2611F9D8003669FF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC4FE1A2611F9D8003669FF /* ContentView.swift */; };
 		2EC4FE1D2611FA21003669FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2EC4FE1C2611FA21003669FF /* Assets.xcassets */; };
@@ -17,11 +20,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2E1CBFBC2779D54A00EA1820 /* ARKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ARKit.framework; path = System/Library/Frameworks/ARKit.framework; sourceTree = SDKROOT; };
+		2E1CBFBF2779D57A00EA1820 /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
+		2E1CBFC12779D58500EA1820 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		2E1CBFC32779D58E00EA1820 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		2E7E3A67261301D700FE7FDE /* shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shader.metal; sourceTree = "<group>"; };
 		2E7E3A6A26132A4A00FE7FDE /* nature.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nature.jpg; sourceTree = "<group>"; };
 		2E7E3A922614F45800FE7FDE /* shadertypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shadertypes.h; sourceTree = "<group>"; };
 		2E7E3A972614FB2700FE7FDE /* camera1-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "camera1-Bridging-Header.h"; sourceTree = "<group>"; };
-		2E7E3A982614FB2A00FE7FDE /* objc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = objc.m; sourceTree = "<group>"; };
 		2EC4FE152611F9D8003669FF /* camera1.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = camera1.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2EC4FE182611F9D8003669FF /* camera1App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = camera1App.swift; sourceTree = "<group>"; };
 		2EC4FE1A2611F9D8003669FF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -35,19 +41,34 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E1CBFC22779D58500EA1820 /* MetalKit.framework in Frameworks */,
+				2E1CBFC02779D57A00EA1820 /* RealityKit.framework in Frameworks */,
+				2E1CBFC42779D58E00EA1820 /* Metal.framework in Frameworks */,
+				2E1CBFBD2779D54B00EA1820 /* ARKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E1CBFBB2779D54A00EA1820 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				2E1CBFC32779D58E00EA1820 /* Metal.framework */,
+				2E1CBFC12779D58500EA1820 /* MetalKit.framework */,
+				2E1CBFBF2779D57A00EA1820 /* RealityKit.framework */,
+				2E1CBFBC2779D54A00EA1820 /* ARKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		2EC4FE0C2611F9D7003669FF = {
 			isa = PBXGroup;
 			children = (
-				2E7E3A982614FB2A00FE7FDE /* objc.m */,
 				2EC4FE172611F9D8003669FF /* camera1 */,
 				2EC4FE162611F9D8003669FF /* Products */,
 				2E7E3A972614FB2700FE7FDE /* camera1-Bridging-Header.h */,
+				2E1CBFBB2779D54A00EA1820 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -156,7 +177,6 @@
 				2EC4FE1B2611F9D8003669FF /* ContentView.swift in Sources */,
 				2E7E3A68261301D700FE7FDE /* shader.metal in Sources */,
 				2EC4FE192611F9D8003669FF /* camera1App.swift in Sources */,
-				2E7E3A992614FB2B00FE7FDE /* objc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
