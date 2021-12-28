@@ -67,7 +67,6 @@
 			children = (
 				2EC4FE172611F9D8003669FF /* camera1 */,
 				2EC4FE162611F9D8003669FF /* Products */,
-				2E7E3A972614FB2700FE7FDE /* camera1-Bridging-Header.h */,
 				2E1CBFBB2779D54A00EA1820 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -87,6 +86,7 @@
 				2EC4FE1A2611F9D8003669FF /* ContentView.swift */,
 				2E7E3A6A26132A4A00FE7FDE /* nature.jpg */,
 				2E7E3A67261301D700FE7FDE /* shader.metal */,
+				2E7E3A972614FB2700FE7FDE /* camera1-Bridging-Header.h */,
 				2E7E3A922614F45800FE7FDE /* shadertypes.h */,
 				2EC4FE1C2611FA21003669FF /* Assets.xcassets */,
 				2EC4FE212611FA22003669FF /* Info.plist */,
@@ -318,7 +318,7 @@
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = jhbbhjlhbh.camera1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "camera1-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "camera1/camera1-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -344,7 +344,7 @@
 				NEW_SETTING = "";
 				PRODUCT_BUNDLE_IDENTIFIER = jhbbhjlhbh.camera1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "camera1-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "camera1/camera1-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -6,27 +6,27 @@
 //
 
 #include <metal_stdlib>
-#include <simd/simd.h>
 #include "shadertypes.h"
 using namespace metal;
 
 constant uint2 iRes(750,1294);
 constant float PI=3.141592653589793;
 
+typedef texture2d<float,access::sample> s_tex;
+typedef texture2d<float,access::write > w_tex;
+
 
 float4 ycbcr2rgb(float4 ycbcr){
-    const float4x4 ycbcrToRGBTransform = float4x4(
+    const float4x4 ycbcr_to_rgb_transform=float4x4(
         float4(+1.0000f, +1.0000f, +1.0000f, +0.0000f),
         float4(+0.0000f, -0.3441f, +1.7720f, +0.0000f),
         float4(+1.4020f, -0.7141f, +0.0000f, +0.0000f),
         float4(-0.7010f, +0.5291f, -0.8860f, +1.0000f)
     );
-    return ycbcrToRGBTransform*ycbcr;
+    return ycbcr_to_rgb_transform*ycbcr;
 }
 
-float4 getpixel(float2 uv,
-                texture2d<float, access::sample> input0 [[texture(0)]],
-                texture2d<float, access::sample> input1 [[texture(1)]]){
+float4 getpixel(float2 uv,s_tex input0 [[texture(0)]],s_tex input1 [[texture(1)]]){
     constexpr sampler colsamp(mip_filter::linear,
                               mag_filter::linear,
                               min_filter::linear);
@@ -72,9 +72,7 @@ float2 rotuv(float2 uv,float theta){
     return uv;
 }
 
-float3 conv(float2 uv,float3x3 k,
-            texture2d<float, access::sample> input0 [[texture(0)]],
-            texture2d<float, access::sample> input1 [[texture(1)]]){
+float3 conv(float2 uv,float3x3 k,s_tex input0 [[texture(0)]],s_tex input1 [[texture(1)]]){
     float3 s=float3(0.);
     for (int i=-1;i<=1;i++){
         for (int j=-1;j<=1;j++){
@@ -90,11 +88,16 @@ float3 conv(float2 uv,float3x3 k,
 
 
 
-kernel void compute(texture2d<float, access::sample> in0 [[texture(0)]],
-                    texture2d<float, access::sample> in1 [[texture(1)]],
-                    texture2d<float, access::write> output [[texture(2)]],
+kernel void compute(s_tex in0 [[texture(0)]],s_tex in1 [[texture(1)]],
+                    w_tex output [[texture(2)]],
                     constant uniforms &uni [[buffer(0)]],
-                    uint2 id [[thread_position_in_grid]]){
+                    uint2 id [[thread_position_in_grid]],
+                    s_tex prev_frame [[texture(3)]]){
+    
+    constexpr sampler colsamp(mip_filter::linear,
+                              mag_filter::linear,
+                              min_filter::linear);
+    
     
     float2 uv=float2(id.y,id.x)/float2(uni.iRes.y,uni.iRes.x);
     uv.y=1-uv.y;
@@ -107,6 +110,9 @@ kernel void compute(texture2d<float, access::sample> in0 [[texture(0)]],
     
     
     uv=fmod(uv,1.);
+    
+    float4 prev_col=prev_frame.sample(colsamp,float2(id)/float2(uni.iRes));//uv/float2(2,1));
+    
     float3 col=float3(getpixel(uv,in0,in1).x,
                       getpixel(fmod(uv+float2(0,uni.offset),1),in0,in1).y,
                       getpixel(fmod(uv+2*float2(0,uni.offset),1),in0,in1).z);
@@ -117,9 +123,6 @@ kernel void compute(texture2d<float, access::sample> in0 [[texture(0)]],
     else if(uni.bl) col=conv(uv,gbk,in0,in1);
     
     if(uni.yc){
-        constexpr sampler colsamp(mip_filter::linear,
-                                  mag_filter::linear,
-                                  min_filter::linear);
         col=in0.sample(colsamp,uv/float2(2,1)).xyz;
     }
     
@@ -139,6 +142,8 @@ kernel void compute(texture2d<float, access::sample> in0 [[texture(0)]],
 
 
     float4 out(col,1);
-    output.write(out, id);
+    if(uni.ex) output.write(out*.1+prev_col*.9, id);
+    else if(uni.rd) output.write(abs(out-prev_col), id);
+    else output.write(out,id);
 }
 

@@ -45,6 +45,8 @@ struct ui_bindings{
     var th:Binding<bool>
     var ng:Binding<bool>
     var yc:Binding<bool>
+    var ex:Binding<bool>
+    var rd:Binding<bool>
 }
 
 
@@ -59,38 +61,54 @@ struct ContentView:View{
     @State var th=false
     @State var ng=false
     @State var yc=false
+    @State var ex=false
+    @State var rd=false
     var body:some View{
         let maincamview=cameraview(
             ub:ui_bindings(h: $h,s: $s, b: $b, off: $off,
-                           ed:$ed,sh:$sh,bl:$bl,th:$th,ng:$ng,yc:$yc)
+                           ed:$ed,sh:$sh,bl:$bl,th:$th,ng:$ng,yc:$yc,
+                           ex:$ex,rd:$rd)
         )
         let mainarview=arview(del:maincamview.del)
-        ZStack{
-            maincamview
-            Spacer()
-            mainarview
-            maincamview
-        }
-        HStack{
-            HStack{
-                
-                Spacer()
-                Toggle("ed",isOn:$ed);Spacer()
-                Toggle("sh",isOn:$sh);Spacer()
-                Toggle("bl",isOn:$bl);Spacer()
-            }
-            HStack{
-                Toggle("th",isOn:$th);Spacer()
-                Toggle("ng",isOn:$ng);Spacer()
-                Toggle("yc",isOn:$yc);Spacer()
-            }
-        }
+        
         VStack{
-            Slider(value:$h,in:0...1){Text("")}
-            Slider(value:$s,in:0...2){Text("")}
-            Slider(value:$b,in:0...5){Text("")}
-            Slider(value:$off,in:0...1){Text("")}
+            ZStack{
+                maincamview
+                Spacer()
+                mainarview
+                maincamview
+            }
+            HStack{
+                HStack{
+                    
+                    Spacer()
+                    Toggle("ed",isOn:$ed);Spacer()
+                    Toggle("sh",isOn:$sh);Spacer()
+                    Toggle("bl",isOn:$bl);Spacer()
+                }
+                HStack{
+                    Toggle("th",isOn:$th);Spacer()
+                    Toggle("ng",isOn:$ng);Spacer()
+                    Toggle("yc",isOn:$yc);Spacer()
+                }
+            }
+            HStack{
+                Spacer()
+                Toggle("ex",isOn:$ex);Spacer()
+                Toggle("rd",isOn:$rd);Spacer()
+            }
+            HStack{
+                Spacer()
+                VStack{
+                    Slider(value:$h,in:0...1){Text("hue")}
+                    Slider(value:$s,in:0...2){Text("sat")}
+                    Slider(value:$b,in:0...5){Text("brg")}
+                    Slider(value:$off,in:0...1){Text("off")}
+                }
+                Spacer()
+            }
         }
+    
     }
 }
 
@@ -134,11 +152,13 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLComputePipelineState
     var image: MTLTexture
+    var prev_image: MTLTexture
     var frameCount:int=0
     var capturedImageTextureCache:CVMetalTextureCache!
     var tex0:MTLTexture?
     var tex1:MTLTexture?
-    var t:float=0
+    var pt:float=0
+    var dt:float=0
     var uni:uniforms?
     var ub:ui_bindings?
     override init(){
@@ -150,6 +170,7 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
         let textureLoader = MTKTextureLoader(device: device)
         let url = Bundle.main.url(forResource: "nature", withExtension: "jpg")!
         image = try! textureLoader.newTexture(URL: url, options: [:])
+        prev_image = try! textureLoader.newTexture(URL: url, options: [:])
         let library=device.makeDefaultLibrary()!
         let function=library.makeFunction(name: "compute")!
         pipelineState=try! device.makeComputePipelineState(function: function)
@@ -169,6 +190,8 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
         commandEncoder.setBuffer(buf,offset:0,index:0)
         
         
+        commandEncoder.setTexture(prev_image, index: 3)
+
         if tex0 != nil{
             commandEncoder.setTexture(tex0!, index: 0)
             commandEncoder.setTexture(tex1!, index: 1)
@@ -190,7 +213,11 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
         commandBuffer.present(drawable)
         commandBuffer.commit()
         frameCount+=1
+        var now=time()
+        dt=now-pt
+        pt=now
         print("frame")
+        prev_image=drawable.texture
     }
     func createTexture(_ pixelBuffer: CVPixelBuffer,_ pixelFormat: MTLPixelFormat,_ plane:int)->MTLTexture?{
         let w=CVPixelBufferGetWidthOfPlane(pixelBuffer,plane)
@@ -209,16 +236,25 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
     func setuniforms(_ view: MTKView){
         let iRes=simd_uint2(UInt32(view.drawableSize.width),
                             UInt32(view.drawableSize.height))
-        let i1=ub!.ed.wrappedValue ? Int32(1):Int32(0)
-        let i2=ub!.sh.wrappedValue ? Int32(1):Int32(0)
-        let i3=ub!.bl.wrappedValue ? Int32(1):Int32(0)
-        let i4=ub!.th.wrappedValue ? Int32(1):Int32(0)
-        let i5=ub!.ng.wrappedValue ? Int32(1):Int32(0)
-        let i6=ub!.yc.wrappedValue ? Int32(1):Int32(0)
-        let hsb=simd_float3(ub!.h.wrappedValue,ub!.s.wrappedValue,ub!.b.wrappedValue)
-        uni=uniforms(iTime: time(), iRes: iRes,
-                     ed:i1, sh:i2, bl:i3,th:i4,ng:i5,yc:i6,
-                     hsb:hsb,offset:ub!.off.wrappedValue)
+        
+        func bool2i32(_ b:Binding<bool>)->Int32{
+            return b.wrappedValue ? Int32(1):Int32(0)
+        }
+        uni=uniforms(iTime: time(),
+                     iRes: iRes,
+                     frameCount: Int32(frameCount),
+                     dt:dt,
+                     ed:bool2i32(ub!.ed),
+                     sh:bool2i32(ub!.sh),
+                     bl:bool2i32(ub!.bl),
+                     th:bool2i32(ub!.th),
+                     ng:bool2i32(ub!.ng),
+                     yc:bool2i32(ub!.yc),
+                     ex:bool2i32(ub!.ex),
+                     rd:bool2i32(ub!.rd),
+                     hsb:simd_float3(ub!.h.wrappedValue,ub!.s.wrappedValue,ub!.b.wrappedValue),
+                     offset:ub!.off.wrappedValue
+        )
     }
 }
 
