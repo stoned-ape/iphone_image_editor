@@ -11,7 +11,7 @@ import Dispatch
 import ARKit
 import RealityKit
 import simd
-//#import "shadertypes.h"
+
 
 
 typealias float=Float
@@ -33,20 +33,37 @@ func time()->float{
 
 let bytes_per_image=4032*3024*4*4
 
-var ed=false
-var sh=false
-var bl=false
-var th=false
-var ng=false
-var yc=false
+
+struct ui_bindings{
+    var h:Binding<float>
+    var s:Binding<float>
+    var b:Binding<float>
+    var off:Binding<float>
+    var ed:Binding<bool>
+    var sh:Binding<bool>
+    var bl:Binding<bool>
+    var th:Binding<bool>
+    var ng:Binding<bool>
+    var yc:Binding<bool>
+}
+
 
 struct ContentView:View{
     @State var h:float=0
     @State var s:float=1
     @State var b:float=1
     @State var off:float=0
+    @State var ed=false
+    @State var sh=false
+    @State var bl=false
+    @State var th=false
+    @State var ng=false
+    @State var yc=false
     var body:some View{
-        let maincamview=cameraview(h:$h,s:$s,b:$b,off:$off)
+        let maincamview=cameraview(
+            ub:ui_bindings(h: $h,s: $s, b: $b, off: $off,
+                           ed:$ed,sh:$sh,bl:$bl,th:$th,ng:$ng,yc:$yc)
+        )
         let mainarview=arview(del:maincamview.del)
         ZStack{
             maincamview
@@ -56,22 +73,16 @@ struct ContentView:View{
         }
         HStack{
             HStack{
+                
                 Spacer()
-                Button("ed"){ed = !ed}
-                Spacer()
-                Button("sh"){sh = !sh}
-                Spacer()
-                Button("bl"){bl = !bl}
-//                Spacer()
+                Toggle("ed",isOn:$ed);Spacer()
+                Toggle("sh",isOn:$sh);Spacer()
+                Toggle("bl",isOn:$bl);Spacer()
             }
             HStack{
-                Spacer()
-                Button("th"){th = !th}
-                Spacer()
-                Button("ng"){ng = !ng}
-                Spacer()
-                Button("yc"){yc = !yc}
-                Spacer()
+                Toggle("th",isOn:$th);Spacer()
+                Toggle("ng",isOn:$ng);Spacer()
+                Toggle("yc",isOn:$yc);Spacer()
             }
         }
         VStack{
@@ -83,22 +94,18 @@ struct ContentView:View{
     }
 }
 
+
+
 struct cameraview:UIViewRepresentable{
     let mtkview=MTKView()
     var del=renderer()
-    var h:Binding<float>
-    var s:Binding<float>
-    var b:Binding<float>
-    var off:Binding<float>
+    var ub:ui_bindings
     func makeUIView(context: Context)->some UIView{
         mtkview.delegate=del
         mtkview.device=del.device
         mtkview.framebufferOnly=false
         
-        del.h=h
-        del.s=s
-        del.b=b
-        del.off=off
+        del.ub=ub
         return mtkview
     }
     func updateUIView(_ uiView: UIViewType, context: Context){}
@@ -133,10 +140,7 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
     var tex1:MTLTexture?
     var t:float=0
     var uni:uniforms?
-    var h:Binding<float>?
-    var s:Binding<float>?
-    var b:Binding<float>?
-    var off:Binding<float>?
+    var ub:ui_bindings?
     override init(){
         device=MTLCreateSystemDefaultDevice()!
         var textureCache: CVMetalTextureCache?
@@ -199,22 +203,22 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
     }
     func session(_ session: ARSession, didUpdate frame: ARFrame){
         print("arframe")
-        tex0=createTexture(frame.capturedImage,yc ? .b5g6r5Unorm : .r8Unorm,0)
-        tex1=createTexture(frame.capturedImage,yc ? .b5g6r5Unorm : .rg8Unorm,1)
+        tex0=createTexture(frame.capturedImage,ub!.yc.wrappedValue ? .b5g6r5Unorm : .r8Unorm,0)
+        tex1=createTexture(frame.capturedImage,ub!.yc.wrappedValue ? .b5g6r5Unorm : .rg8Unorm,1)
     }
     func setuniforms(_ view: MTKView){
         let iRes=simd_uint2(UInt32(view.drawableSize.width),
                             UInt32(view.drawableSize.height))
-        let i1=ed ? Int32(1):Int32(0)
-        let i2=sh ? Int32(1):Int32(0)
-        let i3=bl ? Int32(1):Int32(0)
-        let i4=th ? Int32(1):Int32(0)
-        let i5=ng ? Int32(1):Int32(0)
-        let i6=yc ? Int32(1):Int32(0)
-        let hsb=simd_float3(h!.wrappedValue,s!.wrappedValue,b!.wrappedValue)
+        let i1=ub!.ed.wrappedValue ? Int32(1):Int32(0)
+        let i2=ub!.sh.wrappedValue ? Int32(1):Int32(0)
+        let i3=ub!.bl.wrappedValue ? Int32(1):Int32(0)
+        let i4=ub!.th.wrappedValue ? Int32(1):Int32(0)
+        let i5=ub!.ng.wrappedValue ? Int32(1):Int32(0)
+        let i6=ub!.yc.wrappedValue ? Int32(1):Int32(0)
+        let hsb=simd_float3(ub!.h.wrappedValue,ub!.s.wrappedValue,ub!.b.wrappedValue)
         uni=uniforms(iTime: time(), iRes: iRes,
                      ed:i1, sh:i2, bl:i3,th:i4,ng:i5,yc:i6,
-                     hsb:hsb,offset:off!.wrappedValue)
+                     hsb:hsb,offset:ub!.off.wrappedValue)
     }
 }
 
