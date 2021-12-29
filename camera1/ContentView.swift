@@ -152,7 +152,7 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
     let commandQueue: MTLCommandQueue
     var pipelineState: MTLComputePipelineState
     var image: MTLTexture
-    var prev_image: MTLTexture
+    var prev_frame: MTLTexture
     var frameCount:int=0
     var capturedImageTextureCache:CVMetalTextureCache!
     var tex0:MTLTexture?
@@ -168,16 +168,21 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
         capturedImageTextureCache = textureCache
         commandQueue=device.makeCommandQueue()!
         let textureLoader = MTKTextureLoader(device: device)
-        let url = Bundle.main.url(forResource: "nature", withExtension: "jpg")!
+        let url = Bundle.main.url(forResource: "black", withExtension: "png")!
         image = try! textureLoader.newTexture(URL: url, options: [:])
-        prev_image = try! textureLoader.newTexture(URL: url, options: [:])
+        prev_frame = try! textureLoader.newTexture(URL: url, options: [:])
         let library=device.makeDefaultLibrary()!
         let function=library.makeFunction(name: "compute")!
         pipelineState=try! device.makeComputePipelineState(function: function)
     }
     
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize){}
-    
+    func dt_update(){
+        frameCount+=1
+        let now=time()
+        dt=now-pt
+        pt=now
+    }
     func draw(in view: MTKView){
         guard let commandBuffer = commandQueue.makeCommandBuffer(),
               let commandEncoder = commandBuffer.makeComputeCommandEncoder(),
@@ -190,7 +195,7 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
         commandEncoder.setBuffer(buf,offset:0,index:0)
         
         
-        commandEncoder.setTexture(prev_image, index: 3)
+        commandEncoder.setTexture(prev_frame, index: 3)
 
         if tex0 != nil{
             commandEncoder.setTexture(tex0!, index: 0)
@@ -212,12 +217,9 @@ class renderer:NSObject,MTKViewDelegate,ARSessionDelegate{
         commandEncoder.endEncoding()
         commandBuffer.present(drawable)
         commandBuffer.commit()
-        frameCount+=1
-        var now=time()
-        dt=now-pt
-        pt=now
+        dt_update()
         print("frame")
-        prev_image=drawable.texture
+        prev_frame=drawable.texture
     }
     func createTexture(_ pixelBuffer: CVPixelBuffer,_ pixelFormat: MTLPixelFormat,_ plane:int)->MTLTexture?{
         let w=CVPixelBufferGetWidthOfPlane(pixelBuffer,plane)

@@ -11,6 +11,7 @@
 		2E1CBFC02779D57A00EA1820 /* RealityKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFBF2779D57A00EA1820 /* RealityKit.framework */; };
 		2E1CBFC22779D58500EA1820 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFC12779D58500EA1820 /* MetalKit.framework */; };
 		2E1CBFC42779D58E00EA1820 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E1CBFC32779D58E00EA1820 /* Metal.framework */; };
+		2E1CBFCB277BF2DF00EA1820 /* black.png in Resources */ = {isa = PBXBuildFile; fileRef = 2E1CBFCA277BF2D300EA1820 /* black.png */; };
 		2E7E3A68261301D700FE7FDE /* shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2E7E3A67261301D700FE7FDE /* shader.metal */; };
 		2E7E3A6B26132A4D00FE7FDE /* nature.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 2E7E3A6A26132A4A00FE7FDE /* nature.jpg */; };
 		2EC4FE192611F9D8003669FF /* camera1App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EC4FE182611F9D8003669FF /* camera1App.swift */; };
@@ -24,6 +25,7 @@
 		2E1CBFBF2779D57A00EA1820 /* RealityKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealityKit.framework; path = System/Library/Frameworks/RealityKit.framework; sourceTree = SDKROOT; };
 		2E1CBFC12779D58500EA1820 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		2E1CBFC32779D58E00EA1820 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		2E1CBFCA277BF2D300EA1820 /* black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = black.png; path = ../../../../Desktop/screen_shots/black.png; sourceTree = "<group>"; };
 		2E7E3A67261301D700FE7FDE /* shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shader.metal; sourceTree = "<group>"; };
 		2E7E3A6A26132A4A00FE7FDE /* nature.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nature.jpg; sourceTree = "<group>"; };
 		2E7E3A922614F45800FE7FDE /* shadertypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shadertypes.h; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			children = (
 				2EC4FE182611F9D8003669FF /* camera1App.swift */,
 				2EC4FE1A2611F9D8003669FF /* ContentView.swift */,
+				2E1CBFCA277BF2D300EA1820 /* black.png */,
 				2E7E3A6A26132A4A00FE7FDE /* nature.jpg */,
 				2E7E3A67261301D700FE7FDE /* shader.metal */,
 				2E7E3A972614FB2700FE7FDE /* camera1-Bridging-Header.h */,
@@ -162,6 +165,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E7E3A6B26132A4D00FE7FDE /* nature.jpg in Resources */,
+				2E1CBFCB277BF2DF00EA1820 /* black.png in Resources */,
 				2EC4FE202611FA21003669FF /* Preview Assets.xcassets in Resources */,
 				2EC4FE1D2611FA21003669FF /* Assets.xcassets in Resources */,
 			);
